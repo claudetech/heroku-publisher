@@ -33,7 +33,9 @@
   },
   "dependencies": {
     "fs-extra": "^0.11.0",
-    "lodash": "^2.4.1"
+    "heroku-legacy": "^0.1.2",
+    "lodash": "^2.4.1",
+    "prompt": "git+https://github.com/claudetech/prompt.git"
   },
   "config": {
     "blanket": {
