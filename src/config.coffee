@@ -18,4 +18,4 @@ exports.getGlobal = ->
   globalConfig ?= fs.readJSONSync exports.configFile
 
 exports.save = (config) ->
- fs.outputJSONSync exports.configFile, config
+  fs.outputJSONSync exports.configFile, config
