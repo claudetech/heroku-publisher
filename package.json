@@ -1,0 +1,45 @@
+{
+  "name": "heroku-publisher",
+  "version": "0.1.0",
+  "description": "CLI tool to publish static website to Heroku",
+  "main": "lib/heroku-publisher.js",
+  "bin": {
+    "heroku-publisher": "bin/heroku-publisher.js"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/claudetech/heroku-publisher.git"
+  },
+  "keywords": [
+    "git"
+  ],
+  "author": "Daniel Perez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/claudetech/heroku-publisher/issues"
+  },
+  "homepage": "https://github.com/claudetech/heroku-publisher",
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "expect.js": "^0.3.1",
+    "grunt": "^0.4.4",
+    "grunt-contrib-coffee": "^0.10.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mocha-cov": "^0.2.1",
+    "mocha": "^1.20.0"
+  },
+  "dependencies": {
+    "fs-extra": "^0.11.0",
+    "lodash": "^2.4.1"
+  },
+  "config": {
+    "blanket": {
+      "pattern": "src",
+      "loader": "./node-loaders/coffee-script",
+      "data-cover-never": "node_modules"
+    }
+  }
+}
