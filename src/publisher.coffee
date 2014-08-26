@@ -2,6 +2,7 @@ fs         = require 'fs-extra'
 path       = require 'path'
 Repository = require('git-cli').Repository
 npm        = require 'npm'
+_          = require 'lodash'
 
 config     = require './config'
 herokuGit  = require './heroku-git'
@@ -12,13 +13,13 @@ templatesDir = path.join path.dirname(__dirname), 'templates'
 installNodeStatic = ->
   doSave = npm.config.get 'save'
   npm.config.set 'save', true
-  npm.commands.install 'node-static'
+  npm.commands.install ['node-static']
   npm.config.set 'save', doSave
 
 copyFiles = (config) ->
   fs.copySync path.join(templatesDir, 'Procfile'), 'Procfile'
-  serverRawContent = fs.readFileSync path.join(templatesDir, 'server.js')
-  serverContent = _.template(serverContent)(config)
+  serverRawContent = fs.readFileSync path.join(templatesDir, 'server.js'), 'utf8'
+  serverContent = _.template(serverRawContent)(config)
   fs.writeFileSync 'server.js', serverContent
 
 exports.addNodeServer = (directory, callback) ->
@@ -29,8 +30,7 @@ exports.addNodeServer = (directory, callback) ->
   npm.load ->
     installNodeStatic()
     copyFiles projectConfig
-
-
+    callback()
 
 exports.publish = (options, callback) ->
   directory = options.directory ? process.cwd()

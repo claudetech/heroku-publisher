@@ -23,7 +23,7 @@ exports.getLocal = (directory) ->
   if fs.existsSync configFile then fs.readJSONSync configFile else {}
 
 exports.getProjectConfig = (directory) ->
-  _.extends {}, defaultConfig, exports.getLocal(directory), exports.getGlobal().project
+  _.extend {}, defaultConfig, exports.getLocal(directory), exports.getGlobal().project
 
 exports.getGlobal = ->
   globalConfig ?= fs.readJSONSync exports.configFile
