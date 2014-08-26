@@ -1,10 +1,9 @@
 _         = require 'lodash'
 readline  = require 'readline'
 HerokuApi = require 'heroku-legacy'
-prompt    = require 'prompt'
+prompt    = require './prompt'
 
 config    = require './config'
-prompt.message = ''
 
 exports.login = (options, callback) ->
   [options, callback] = [{}, options] if _.isFunction(options)

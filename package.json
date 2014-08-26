@@ -34,8 +34,8 @@
   "dependencies": {
     "argparse": "^0.1.15",
     "fs-extra": "^0.11.0",
-    "git-cli": "^0.6.2",
-    "heroku-legacy": "^0.1.2",
+    "git-cli": "^0.7.0",
+    "heroku-legacy": "^0.1.4",
     "lodash": "^2.4.1",
     "prompt": "git+https://github.com/claudetech/prompt.git"
   },

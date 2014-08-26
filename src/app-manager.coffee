@@ -1,17 +1,41 @@
 _        = require 'lodash'
 apiTools = require './api-tools'
+prompt   = require './prompt'
 
 setRemote = (repo, app, options, callback) ->
-  console.log app
-
+  repo.listRemotes (err, remotes) ->
+    cb = (er) -> callback er, app
+    if 'heroku' in remotes
+      repo.setRemoteUrl 'heroku', app.git_url, cb
+    else
+      repo.addRemote 'heroku', app.git_url, cb
 
 getOptions = (repo, options={}, callback) ->
   [options, callback] = [{}, options] if _.isFunction(options)
   options.appName ?= repo.workingDir()
   [options, callback]
 
-exports.createApp = (repo, options, callback) ->
+exports.promptAppName = (callback) ->
+  prompt.start()
+  prompt.get name: 'appName', message: 'Application name', callback
+
+exports.createApp = (repo, api, options, callback) ->
   [options, callback] = getOptions repo, options, callback
+  api.postApp name: options.appName, (err, app) ->
+    return callback(err, app) if err == null
+    if err.code == 422 && options.retry
+      console.warn err.message
+      exports.promptAppName (err, result) ->
+        return callback err unless err is null
+        options.appName = result.appName
+        exports.createApp repo, api, options, callback
+    else
+      callback err
+
+createAndSetRemote = (repo, api, options, callback) ->
+  exports.createApp repo, api, options, (err, app) ->
+    return callback(err) unless err is null
+    setRemote repo, app, options, callback
 
 exports.initializeApp = (repo, options, callback) ->
   [options, callback] = getOptions repo, options, callback
@@ -19,5 +43,7 @@ exports.initializeApp = (repo, options, callback) ->
     api.getApps (err, apps) ->
       return callback?(err) unless err is null
       app = _.find apps, (app) -> app.name == options.appName
-      cb = -> setRemote repo, app, options, callback
-      if app? then cb() else exports.createApp repo, options, cb
+      if app?
+        setRemote repo, app, options, callback
+      else
+        createAndSetRemote repo, api, options, callback
