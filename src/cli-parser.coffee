@@ -25,10 +25,23 @@ loginParser = actionSubparser.addParser 'login',
 loginParser.addArgument ['-R', '--no-retry'],
   action: 'storeFalse'
   dest: 'retry'
+  help: 'Do not prompt login again on failure.'
 
 publishParser = actionSubparser.addParser 'publish',
   addHelp: true
   description: 'Publish to Heroku'
+
+publishParser.addArgument ['-n', '--name'],
+  action: 'store'
+  dest: 'appName'
+  metavar: 'APP_NAME'
+  help: 'Application name to be created'
+
+publishParser.addArgument ['-R', '--no-retry'],
+  action: 'storeFalse'
+  dest: 'retry'
+  help: 'Do not prompt app name on failure.'
+
 
 addDefaultArg = (args) ->
   hasArg = false

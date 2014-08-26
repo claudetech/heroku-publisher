@@ -3,8 +3,8 @@ path       = require 'path'
 Repository = require('git-cli').Repository
 
 prepareBranch = (repo, callback) ->
-  repo.checkout 'heroku', ->
-    callback?(repo)
+  repo.checkout 'heroku', (err) ->
+    callback?(err, repo)
 
 checkBranch = (repo, callback) ->
   repo.branch (err, branches) ->

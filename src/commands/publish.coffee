@@ -1,5 +1,8 @@
-publisher = require '../heroku-publisher'
+publisher = require '../publisher'
 
 exports.run = (options) ->
-  publisher.publish options, ->
+  options.retry ?= true
+  publisher.publish options, (err, app) ->
+    console.log err
+    console.log app
     console.log 'published'
