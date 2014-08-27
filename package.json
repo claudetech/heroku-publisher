@@ -1,6 +1,6 @@
 {
   "name": "heroku-publisher",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "CLI tool to publish static website to Heroku",
   "main": "lib/index.js",
   "bin": {
