@@ -26,7 +26,10 @@ exports.getProjectConfig = (directory) ->
   _.extend {}, defaultConfig, exports.getLocal(directory), exports.getGlobal().project
 
 exports.getGlobal = ->
-  globalConfig ?= fs.readJSONSync exports.configFile
+  unless globalConfig?
+    exports.initialize()
+    globalConfig = fs.readJSONSync exports.configFile
+  globalConfig
 
 exports.save = (config) ->
   fs.outputJSONSync exports.configFile, config
