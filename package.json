@@ -2,7 +2,7 @@
   "name": "heroku-publisher",
   "version": "0.1.2",
   "description": "CLI tool to publish static website to Heroku",
-  "main": "lib/heroku-publisher.js",
+  "main": "lib/index.js",
   "bin": {
     "heroku-publisher": "bin/heroku-publisher.js"
   },

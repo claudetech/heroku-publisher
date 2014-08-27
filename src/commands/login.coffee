@@ -1,7 +1,7 @@
-auth = require '../auth'
+apiTools = require '../api-tools'
 
 exports.run = (opts) ->
-  auth.login opts, (err, api) ->
+  apiTools.login opts, (err, api) ->
     if err == null
       console.log 'Your API key has been saved.'
     else
