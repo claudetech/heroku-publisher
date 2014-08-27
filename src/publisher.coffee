@@ -20,7 +20,7 @@ copyFiles = (config, appName) ->
   conf.dependencies ?= {}
   unless _.find(conf.dependencies, (ver, dep) -> dep == 'node-static')
     conf.dependencies['node-static'] = NODE_STATIC_VERSION
-  fs.writeFileSync 'package.json', JSON.stringify(conf)
+  fs.writeJSONSync 'package.json', conf
 
 exports.addNodeServer = (directory, appName, callback) ->
   cwd = process.cwd()
