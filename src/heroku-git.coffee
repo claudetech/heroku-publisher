@@ -32,6 +32,7 @@ exports.setupDirectory = (directory, callback) ->
       runSetup repo, callback
 
 exports.addCommit = (repo, dir, callback) ->
-  repo.add [dir], { all: true, force: true }, ->
-    repo.commit 'Preparing to upload to Heroku.', ->
-      callback()
+  repo.add { all: true }, ->
+    repo.add [dir], { all: true, force: true }, ->
+      repo.commit 'Preparing to upload to Heroku.', ->
+        callback()
