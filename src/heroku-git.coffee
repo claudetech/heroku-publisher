@@ -2,18 +2,27 @@ fs         = require 'fs'
 path       = require 'path'
 Repository = require('git-cli').Repository
 
-prepareBranch = (repo, callback) ->
+prepareBranch = (repo, branch, callback) ->
   repo.checkout 'heroku', (err) ->
-    callback?(err, repo)
+    repo.merge 'master', ->
+      callback?(err, repo, branch)
 
 checkBranch = (repo, callback) ->
-  repo.branch (err, branches) ->
-    cb = -> prepareBranch repo, callback
-    if 'heroku' in branches then cb() else repo.branch('heroku', cb)
+  repo.currentBranch (err, branch) ->
+    repo.branch (err, branches) ->
+      cb = -> prepareBranch repo, branch, callback
+      if 'heroku' in branches then cb() else repo.branch('heroku', cb)
+
+ignoreNodeModules = (directory, callback) ->
+  file = path.join directory, '.git', 'info', 'exclude'
+  if fs.readFileSync(file, 'utf8').indexOf('/node_modules') == -1
+    fs.appendFileSync file, '/node_modules'
+  callback()
 
 runSetup = (repo, callback) ->
-  exports.addCommit repo, ->
-    checkBranch repo, callback
+  ignoreNodeModules repo.workingDir(), ->
+    exports.addCommit repo, ->
+      checkBranch repo, callback
 
 exports.setupDirectory = (directory, callback) ->
   if fs.existsSync path.join(directory, '.git')
