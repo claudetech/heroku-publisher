@@ -38,10 +38,10 @@ prepare = (directory, options, callback) ->
 upload = (repo, app, branch, projectConfig, callback) ->
   herokuGit.addCommit repo, projectConfig.publicDir, ->
     repo.push ['heroku', 'heroku:master'], ->
-      repo.checkout branch
-      callback null, app
+      repo.checkout branch, ->
+        callback null, app
 
 exports.publish = (options, callback) ->
   directory = options.directory ? process.cwd()
-  prepare directory, options, (repo, app, branch) ->
-    upload repo, app, branch, callback
+  prepare directory, options, (repo, app, branch, projectConfig) ->
+    upload repo, app, branch, projectConfig, callback
