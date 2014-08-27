@@ -27,16 +27,16 @@ exports.addNodeServer = (directory, appName, callback) ->
   process.chdir directory
   projectConfig = config.getProjectConfig(directory)
   copyFiles projectConfig, appName
-  callback()
+  callback projectConfig
 
 prepare = (directory, options, callback) ->
   herokuGit.setupDirectory directory, (err, repo, branch) ->
     appManager.initializeApp repo, options, (err, app) ->
-      exports.addNodeServer directory, app.name, ->
-        callback repo, app, branch
+      exports.addNodeServer directory, app.name, (projectConfig) ->
+        callback repo, app, branch, projectConfig
 
-upload = (repo, app, branch, callback) ->
-  herokuGit.addCommit repo, ->
+upload = (repo, app, branch, projectConfig, callback) ->
+  herokuGit.addCommit repo, projectConfig.publicDir, ->
     repo.push ['heroku', 'heroku:master'], ->
       repo.checkout branch
       callback null, app

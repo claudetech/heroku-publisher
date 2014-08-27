@@ -21,7 +21,7 @@ ignoreNodeModules = (directory, callback) ->
 
 runSetup = (repo, callback) ->
   ignoreNodeModules repo.workingDir(), ->
-    exports.addCommit repo, ->
+    exports.addCommit repo, '.', ->
       checkBranch repo, callback
 
 exports.setupDirectory = (directory, callback) ->
@@ -31,7 +31,8 @@ exports.setupDirectory = (directory, callback) ->
     Repository.init directory, (err, repo) ->
       runSetup repo, callback
 
-exports.addCommit = (repo, callback) ->
-  repo.add all: true, force: true, ->
+exports.addCommit = (repo, dir, callback) ->
+  console.log dir
+  repo.add [dir], { all: true, force: true }, ->
     repo.commit 'Preparing to upload to Heroku.', ->
       callback()
