@@ -42,6 +42,10 @@ publishParser.addArgument ['-R', '--no-retry'],
   dest: 'retry'
   help: 'Do not prompt app name on failure.'
 
+publishParser.addArgument ['-b', '--build'],
+  action: 'store'
+  dest: 'build'
+  help: 'Command to build the project.'
 
 addDefaultArg = (args) ->
   hasArg = false

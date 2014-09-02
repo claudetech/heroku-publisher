@@ -1,3 +1,4 @@
+_          = require 'lodash'
 fs         = require 'fs'
 path       = require 'path'
 Repository = require('git-cli').Repository
@@ -21,7 +22,7 @@ ignoreNodeModules = (directory, callback) ->
 
 runSetup = (repo, callback) ->
   ignoreNodeModules repo.workingDir(), ->
-    exports.addCommit repo, '.', ->
+    exports.addCommit repo, '.', {}, ->
       checkBranch repo, callback
 
 exports.setupDirectory = (directory, callback) ->
@@ -31,8 +32,8 @@ exports.setupDirectory = (directory, callback) ->
     Repository.init directory, (err, repo) ->
       runSetup repo, callback
 
-exports.addCommit = (repo, dir, callback) ->
-  repo.add { all: true }, ->
-    repo.add [dir], { all: true, force: true }, ->
-      repo.commit 'Preparing to upload to Heroku.', ->
-        callback()
+exports.addCommit = (repo, dir, opts, callback) ->
+  options = _.extend { all: true }, opts
+  repo.add [dir], options, ->
+    repo.commit 'Preparing to upload to Heroku.', ->
+      callback()

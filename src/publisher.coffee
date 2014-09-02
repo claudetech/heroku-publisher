@@ -2,6 +2,7 @@ fs         = require 'fs-extra'
 path       = require 'path'
 Repository = require('git-cli').Repository
 _          = require 'lodash'
+exec       = require('child_process').exec
 
 config     = require './config'
 herokuGit  = require './heroku-git'
@@ -36,12 +37,22 @@ prepare = (directory, options, callback) ->
         callback repo, app, branch, projectConfig
 
 upload = (repo, app, branch, projectConfig, callback) ->
-  herokuGit.addCommit repo, projectConfig.publicDir, ->
-    repo.push ['heroku', 'heroku:master'], ->
-      repo.checkout branch, ->
-        callback null, app
+  herokuGit.addCommit repo, '.', {}, ->
+    herokuGit.addCommit repo, projectConfig.publicDir, { force: true }, ->
+      repo.push ['heroku', 'heroku:master'], ->
+        repo.checkout branch, ->
+          callback null, app
+
+build = (command, callback, baseCallback) ->
+  exec command, (error, stdout, stderr) ->
+    return baseCallback(error) unless error is null
+    callback()
 
 exports.publish = (options, callback) ->
   directory = options.directory ? process.cwd()
   prepare directory, options, (repo, app, branch, projectConfig) ->
-    upload repo, app, branch, projectConfig, callback
+    cb = -> upload repo, app, branch, projectConfig, callback
+    if options.build?
+      build(options.build, cb, callback)
+    else
+      cb()
