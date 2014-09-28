@@ -51,7 +51,8 @@ build = (command, callback, baseCallback) ->
 exports.publish = (options, callback) ->
   directory = options.directory ? process.cwd()
   prepare directory, options, (repo, app, branch, projectConfig) ->
-    cb = -> upload repo, app, branch, projectConfig, callback
+    config = _.extend {}, projectConfig, options
+    cb = -> upload repo, app, branch, config, callback
     if options.build?
       build(options.build, cb, callback)
     else
