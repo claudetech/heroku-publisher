@@ -12,10 +12,10 @@ templatesDir = path.join path.dirname(__dirname), 'templates'
 
 NODE_STATIC_VERSION = '^0.7.4'
 
-copyFiles = (config, appName) ->
+copyFiles = (conf, appName) ->
   fs.copySync path.join(templatesDir, 'Procfile'), 'Procfile'
   serverRawContent = fs.readFileSync path.join(templatesDir, 'server.js'), 'utf8'
-  serverContent = _.template(serverRawContent)(config)
+  serverContent = _.template(serverRawContent)(conf)
   fs.writeFileSync 'server.js', serverContent
   conf = if fs.existsSync('package.json') then fs.readJSONSync('package.json') else { name: appName }
   conf.dependencies ?= {}
@@ -23,22 +23,23 @@ copyFiles = (config, appName) ->
     conf.dependencies['node-static'] = NODE_STATIC_VERSION
   fs.writeJSONSync 'package.json', conf
 
-exports.addNodeServer = (directory, appName, callback) ->
+exports.addNodeServer = (directory, options, appName, callback) ->
   cwd = process.cwd()
   process.chdir directory
   projectConfig = config.getProjectConfig(directory)
-  copyFiles projectConfig, appName
-  callback projectConfig
+  conf = _.extend {}, projectConfig, options
+  copyFiles conf, appName
+  callback conf
 
 prepare = (directory, options, callback) ->
   herokuGit.setupDirectory directory, (err, repo, branch) ->
     appManager.initializeApp repo, options, (err, app) ->
-      exports.addNodeServer directory, app.name, (projectConfig) ->
-        callback repo, app, branch, projectConfig
+      exports.addNodeServer directory, options, app.name, (conf) ->
+        callback repo, app, branch, conf
 
-upload = (repo, app, branch, projectConfig, callback) ->
+upload = (repo, app, branch, conf, callback) ->
   herokuGit.addCommit repo, '.', {}, ->
-    herokuGit.addCommit repo, projectConfig.publicDir, { force: true }, ->
+    herokuGit.addCommit repo, conf.publicDir, { force: true }, ->
       repo.push ['heroku', 'heroku:master'], ->
         repo.checkout branch, ->
           callback null, app
@@ -50,9 +51,8 @@ build = (command, callback, baseCallback) ->
 
 exports.publish = (options, callback) ->
   directory = options.directory ? process.cwd()
-  prepare directory, options, (repo, app, branch, projectConfig) ->
-    config = _.extend {}, projectConfig, options
-    cb = -> upload repo, app, branch, config, callback
+  prepare directory, options, (repo, app, branch, conf) ->
+    cb = -> upload repo, app, branch, conf, callback
     if options.build?
       build(options.build, cb, callback)
     else
