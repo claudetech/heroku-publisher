@@ -12,7 +12,7 @@ setRemote = (repo, app, options, callback) ->
 
 getOptions = (repo, options={}, callback) ->
   [options, callback] = [{}, options] if _.isFunction(options)
-  options.appName ?= repo.workingDir()
+  options.appName ?= repo.workingDir() unless options.allowEmpty
   [options, callback]
 
 exports.promptAppName = (callback) ->
@@ -21,14 +21,16 @@ exports.promptAppName = (callback) ->
 
 exports.createApp = (repo, api, options, callback) ->
   [options, callback] = getOptions repo, options, callback
-  api.postApp name: options.appName, (err, app) ->
+  params = if options.appName then {name: options.appName} else {}
+  api.postApp params, (err, app) ->
     return callback(err, app) if err == null
     if err.code == 422 && options.retry
       console.warn err.message
       exports.promptAppName (err, result) ->
         return callback err unless err is null
         options.appName = result.appName
-        exports.createApp repo, api, options, callback
+        delete options.appName if _.isEmpty(result.appName)
+        exports.createApp repo, api, _.extend(allowEmpty: true, options), callback
     else
       callback err
 
